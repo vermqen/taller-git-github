@@ -143,33 +143,20 @@
             </div>
 
             <div class="games-slider" id="slider">
-                @foreach ([
-                    ['img' => 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80',
-                     'badge' => 'ÚLTIMAS NOTICIAS', 'read' => '4 MIN READ',
-                     'title' => 'PROYECTO BLACKOUT: Descifrando las nuevas reglas de extracción en los videojuegos',
-                     'desc'  => 'Un análisis exhaustivo de las mecánicas del parche v4.12, las nubes de radiación dinámicas y las rutas tácticas óptimas de despliegue.',
-                     'user'  => 'GhostOperator', 'time' => 'HACE 2H'],
-                    ['img' => 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=800&q=80',
-                     'badge' => 'ÚLTIMOS PARCHES', 'read' => '6 MIN READ',
-                     'title' => 'NEON VELOCITY: Actualización de motor de aceleración',
-                     'desc'  => 'Revisión completa de la física de derrape en circuitos urbanos y enlaces cibernéticos nivel 3.',
-                     'user'  => 'ViperNet', 'time' => 'HACE 5H'],
-                    ['img' => 'https://images.unsplash.com/photo-1605902711622-cfb43c443f6c?auto=format&fit=crop&w=800&q=80',
-                     'badge' => 'ANÁLISIS DE JUEGO', 'read' => '5 MIN READ',
-                     'title' => 'SHADOW REALMS: Estrategias de sigilo y combate',
-                     'desc'  => 'Exploración de las mecánicas de sigilo, rutas de escape y optimización de recursos en entornos urbanos.',
-                     'user'  => 'StealthMaster', 'time' => 'HACE 3H'],
-                    ['img' => 'https://images.unsplash.com/photo-1552820728-8b83bb6b773f?auto=format&fit=crop&w=800&q=80',
-                     'badge' => 'NOVEDADES DE JUEGO', 'read' => '7 MIN READ',
-                     'title' => 'CYBER HORIZON: Explorando la expansión de mundo abierto',
-                     'desc'  => 'Análisis de la nueva expansión, incluyendo misiones secundarias y la integración de la inteligencia artificial en NPCs.',
-                     'user'  => 'CyberExplorer', 'time' => 'HACE 4H'],
-                    ['img' => 'https://images.unsplash.com/photo-1593642634367-d91a135587b5?auto=format&fit=crop&w=800&q=80',
-                     'badge' => 'ACTUALIZACIÓN DE MOTOR', 'read' => '8 MIN READ',
-                     'title' => 'VIRTUAL REALITY: Mejoras en la física y la interacción',
-                     'desc'  => 'Revisión de las últimas mejoras en el motor de realidad virtual, incluyendo la simulación de físicas y la respuesta háptica.',
-                     'user'  => 'VRTechie', 'time' => 'HACE 6H'],
-                ] as $game)
+                    @forelse ($noticias as $noticia)
+                        <article class="group flex flex-col overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900 ...">
+                            <!-- Imagen -->
+                            <img src="{{ asset('storage/' . $noticia->imagen) }}" ...>
+                            <!-- Título -->
+                            <h2 class="...">{{ $noticia->titulo }}</h2>
+                            <!-- Contenido -->
+                            <p class="...">{{ $noticia->contenido }}</p>
+                        </article>
+                    @empty
+                        <div class="col-span-full rounded-2xl border border-dashed border-zinc-800 p-12 text-center">
+                            <p class="text-sm text-zinc-500">Todavía no hay noticias publicadas en este equipo.</p>
+                        </div>
+                    @endforelse
                     <article class="game-card">
                         <img src="{{ $game['img'] }}" alt="" loading="lazy" decoding="async" class="game-image">
                         <div class="game-card-body">

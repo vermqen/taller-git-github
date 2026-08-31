@@ -1,118 +1,114 @@
-<x-layouts::app :title="__('Noticias')">
-    <div class="mx-auto w-full max-w-7xl space-y-8 p-6 lg:p-10">
+<x-layouts::app :title="__('Centro de Noticias')">
+    <div class="w-full space-y-8 p-6 lg:p-10">
 
-        <header class="flex flex-wrap items-end justify-between gap-4">
-            <div class="space-y-3">
-                <p class="text-sm font-semibold uppercase tracking-[0.18em] text-amber-600">
-                    {{ $team->name }} // transmisión en vivo
-                </p>
-                <h1 class="text-4xl font-bold tracking-tight text-zinc-900 dark:text-white">
-                    {{ $title }}
-                </h1>
-                <p class="max-w-2xl text-zinc-500 dark:text-zinc-400">
-                    Todo lo que pasa en tus juegos, filtrado y clasificado para tu comunidad.
-                </p>
+        <!-- ENCABEZADO DE SECCIÓN -->
+        <header class="rounded-2xl bg-zinc-900/95 p-8 border border-zinc-800/80 text-white shadow-xl backdrop-blur-md">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-400">
+                        {{ $team->name ?? 'EQUIPO' }} // TRANSMISIÓN EN VIVO
+                    </p>
+                    <h1 class="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">Centro de noticias</h1>
+                    <p class="mt-2 text-sm text-zinc-400 max-w-2xl">
+                        Todo lo que pasa en tus juegos, filtrado y clasificado para tu comunidad.
+                    </p>
+                </div>
+
+                @if(Route::has('noticias.create'))
+                    <a href="{{ route('noticias.create', $team->slug ?? 'default') }}" wire:navigate
+                       class="inline-flex items-center justify-center rounded-xl bg-amber-400 px-5 py-3 text-sm font-bold text-zinc-950 transition hover:bg-amber-300">
+                        Publicar noticia
+                    </a>
+                @endif
             </div>
-
-            <a href="{{ route('noticias.create', $team->slug) }}" wire:navigate
-               class="rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-zinc-950 transition hover:bg-amber-400">
-                Publicar noticia
-            </a>
         </header>
 
-        @if (session('status'))
-            <div role="status"
-                 class="rounded-lg border border-emerald-300 bg-emerald-50 p-4 text-sm text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-300">
-                {{ session('status') }}
-            </div>
-        @endif
+        <!-- GRID DE NOTICIAS (RESPONSIVO Y FLUIDO) -->
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            @foreach ([
+                [
+                    'img' => 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80',
+                    'badge' => 'ÚLTIMAS NOTICIAS', 'read' => '4 MIN READ',
+                    'title' => 'PROYECTO BLACKOUT: Descifrando las nuevas reglas de extracción',
+                    'desc'  => 'Un análisis exhaustivo de las mecánicas del parche v4.12, las nubes de radiación dinámicas y las rutas tácticas.',
+                    'user'  => 'GhostOperator', 'time' => 'HACE 2H'
+                ],
+                [
+                    'img' => 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=800&q=80',
+                    'badge' => 'ÚLTIMOS PARCHES', 'read' => '6 MIN READ',
+                    'title' => 'NEON VELOCITY: Actualización de motor de aceleración',
+                    'desc'  => 'Revisión completa de la física de derrape en circuitos urbanos y enlaces cibernéticos nivel 3.',
+                    'user'  => 'ViperNet', 'time' => 'HACE 5H'
+                ],
+                [
+                    'img' => 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT2egqTlMnCfV58BI3PDDycOGJIcO2o2zqKVBgSoK1Piaz6jTbnvYUgjBA&s=10',
+                    'badge' => 'ANÁLISIS DE JUEGO', 'read' => '5 MIN READ',
+                    'title' => 'SHADOW REALMS: Estrategias de sigilo y combate',
+                    'desc'  => 'Exploración de las mecánicas de sigilo, rutas de escape y optimización de recursos en entornos urbanos.',
+                    'user'  => 'StealthMaster', 'time' => 'HACE 3H'
+                ],
+                [
+                    'img' => 'https://images.unsplash.com/photo-1552820728-8b83bb6b773f?auto=format&fit=crop&w=800&q=80',
+                    'badge' => 'NOVEDADES', 'read' => '7 MIN READ',
+                    'title' => 'CYBER HORIZON: Explorando la expansión de mundo abierto',
+                    'desc'  => 'Análisis de la nueva expansión, incluyendo misiones secundarias y la integración de la inteligencia artificial.',
+                    'user'  => 'CyberExplorer', 'time' => 'HACE 4H'
+                ],
+                [
+                    'img' => 'https://images.unsplash.com/photo-1593642634367-d91a135587b5?auto=format&fit=crop&w=800&q=80',
+                    'badge' => 'MOTOR GRÁFICO', 'read' => '8 MIN READ',
+                    'title' => 'VIRTUAL REALITY: Mejoras en la física y la interacción',
+                    'desc'  => 'Revisión de las últimas mejoras en el motor de realidad virtual, incluyendo simulación de físicas y respuesta háptica.',
+                    'user'  => 'VRTechie', 'time' => 'HACE 6H'
+                ],
+            ] as $game)
+                
+                <!-- TARJETA INDIVIDUAL DE NOTICIA -->
+                <article class="group flex flex-col overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900 transition-all duration-300 hover:border-amber-400/50 hover:shadow-lg hover:shadow-amber-400/5">
+                    
+                    <!-- IMAGEN DE LA NOTICIA CON EFECTO ZOOM -->
+                    <div class="relative h-48 w-full overflow-hidden bg-zinc-950">
+                        <img src="{{ $game['img'] }}" 
+                             alt="{{ $game['title'] }}" 
+                             class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        >
+                        <div class="absolute inset-0 bg-gradient-to-t from-zinc-900 via-transparent opacity-60"></div>
+                        
+                        <!-- ETIQUETA / BADGE -->
+                        <span class="absolute top-3 left-3 rounded-lg bg-zinc-950/80 px-2.5 py-1 text-[10px] font-bold tracking-wider text-amber-400 backdrop-blur-md">
+                            {{ $game['badge'] }}
+                        </span>
+                    </div>
 
-        <form method="GET" action="{{ route('noticias.index', $team->slug) }}"
-              class="flex flex-wrap items-center gap-3 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
-            <label for="buscar" class="sr-only">Buscar noticias</label>
-            <input id="buscar" name="buscar" type="search" value="{{ request('buscar') }}"
-                   placeholder="Buscar por título…" maxlength="180"
-                   class="min-w-56 flex-1 rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
+                    <!-- CONTENIDO DE LA TARJETA -->
+                    <div class="flex flex-1 flex-col justify-between p-6">
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between text-xs text-zinc-500">
+                                <span>{{ $game['read'] }}</span>
+                                <span class="font-mono text-zinc-400">{{ $game['time'] }}</span>
+                            </div>
 
-            <label for="categoria" class="sr-only">Categoría</label>
-            <input id="categoria" name="categoria" type="text" value="{{ request('categoria') }}"
-                   placeholder="Categoría" maxlength="80"
-                   class="w-44 rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
+                            <h2 class="text-lg font-bold text-zinc-100 group-hover:text-amber-400 transition-colors line-clamp-2">
+                                {{ $game['title'] }}
+                            </h2>
 
-            <button type="submit"
-                    class="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
-                Filtrar
-            </button>
-
-            @if (request()->hasAny(['buscar', 'categoria']))
-                <a href="{{ route('noticias.index', $team->slug) }}" wire:navigate
-                   class="text-sm font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-white">
-                    Limpiar
-                </a>
-            @endif
-        </form>
-
-        <p class="text-sm text-zinc-500 dark:text-zinc-400">
-            <span class="font-semibold text-amber-600">{{ $items->total() }}</span>
-            {{ $items->total() === 1 ? 'noticia encontrada' : 'noticias encontradas' }}
-        </p>
-
-        <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            @forelse ($items as $noticia)
-                <article class="flex flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white transition hover:border-amber-400 dark:border-zinc-700 dark:bg-zinc-900">
-                    @if (filled($noticia->imagen_url))
-                        <img src="{{ $noticia->imagen_url }}" alt="" loading="lazy" decoding="async"
-                             class="h-44 w-full object-cover">
-                    @endif
-
-                    <div class="flex flex-1 flex-col gap-3 p-5">
-                        <div class="flex items-center justify-between gap-3">
-                            @if (filled($noticia->categoria))
-                                <span class="rounded-md bg-amber-100 px-2 py-1 text-xs font-bold uppercase tracking-wide text-amber-800 dark:bg-amber-500/15 dark:text-amber-300">
-                                    {{ $noticia->categoria }}
-                                </span>
-                            @else
-                                <span></span>
-                            @endif
-                            <time datetime="{{ $noticia->created_at?->toDateString() }}"
-                                  class="text-xs text-zinc-400">
-                                {{ $noticia->created_at?->diffForHumans() }}
-                            </time>
+                            <p class="text-sm text-zinc-400 line-clamp-3">
+                                {{ $game['desc'] }}
+                            </p>
                         </div>
 
-                        <h2 class="text-lg font-bold leading-snug text-zinc-900 dark:text-white">
-                            <a href="{{ route('noticias.show', [$team->slug, $noticia]) }}" wire:navigate
-                               class="hover:text-amber-600">
-                                {{ $noticia->titulo }}
-                            </a>
-                        </h2>
-
-                        <p class="line-clamp-3 text-sm text-zinc-500 dark:text-zinc-400">
-                            {{ $noticia->contenido }}
-                        </p>
-
-                        <div class="mt-auto flex items-center justify-between border-t border-zinc-100 pt-3 dark:border-zinc-800">
-                            <span class="text-xs font-semibold text-zinc-600 dark:text-zinc-300">
-                                {{ $noticia->autor?->name ?? 'Autor desconocido' }}
+                        <!-- AUTOR / PIE DE TARJETA -->
+                        <div class="mt-6 flex items-center justify-between border-t border-zinc-800/80 pt-4 text-xs">
+                            <span class="font-medium text-zinc-300">Por <strong class="text-amber-400">{{ $game['user'] }}</strong></span>
+                            <span class="font-semibold text-zinc-400 group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
+                                Leer más &rarr;
                             </span>
-                            <a href="{{ route('noticias.edit', [$team->slug, $noticia]) }}" wire:navigate
-                               class="text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-white">
-                                Editar
-                            </a>
                         </div>
                     </div>
                 </article>
-            @empty
-                <p class="rounded-xl border border-dashed border-zinc-300 p-8 text-sm text-zinc-500 md:col-span-2 xl:col-span-3 dark:border-zinc-700">
-                    Todavía no hay noticias en este equipo.
-                    <a href="{{ route('noticias.create', $team->slug) }}" wire:navigate
-                       class="font-semibold text-amber-600 hover:underline">Publica la primera</a>.
-                </p>
-            @endforelse
+
+            @endforeach
         </div>
 
-        @if ($items->hasPages())
-            <div>{{ $items->links() }}</div>
-        @endif
     </div>
 </x-layouts::app>

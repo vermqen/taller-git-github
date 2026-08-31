@@ -1,7 +1,8 @@
 <x-layouts::app :title="__('Dashboard')">
     @vite(['resources/css/chat.css'])
 
-    <div class="mx-auto w-full max-w-7xl space-y-8 p-6 lg:p-10">
+    <!-- CONTENEDOR FLUIDO (Sin mx-auto ni max-w-7xl) -->
+    <div class="w-full space-y-12 p-6 lg:p-10">
 
         <!-- BANNER PRINCIPAL -->
         <div class="rounded-2xl bg-zinc-950 p-8 text-white shadow-xl dark:bg-black">
@@ -81,7 +82,14 @@
         </div>
 
         <!-- ============================================ -->
-        <!-- LOBBY CHAT -->
+        <!-- SECCIÓN DE RANKING (INCLUIDA)                -->
+        <!-- ============================================ -->
+        <section class="pt-4">
+            @include('partials.ranking-preview')
+        </section>
+
+        <!-- ============================================ -->
+        <!-- LOBBY CHAT                                   -->
         <!-- ============================================ -->
         <div class="chat-wrapper">
             <!-- Barra lateral de Amigos / Jugadores -->
@@ -145,6 +153,13 @@
                 </form>
             </div>
         </div>
+
+        <!-- ============================================ -->
+        <!-- SECCIÓN DE CONTACTO (INCLUIDA)               -->
+        <!-- ============================================ -->
+        <section class="pt-4">
+            @include('partials.contacto-preview')
+        </section>
 
     </div>
 

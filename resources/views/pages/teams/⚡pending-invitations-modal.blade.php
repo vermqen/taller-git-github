@@ -1,3 +1,79 @@
+<?php
+
+use function Livewire\Volt\{state, computed};
+use Illuminate\Support\Facades\Auth;
+use Laravel\Jetstream\TeamInvitation;
+use Laravel\Jetstream\Contracts\AddsTeamMembers;
+
+state([
+    'showPendingInvitationsModal' => true,
+]);
+
+$pendingInvitations = computed(function () {
+    $user = Auth::user();
+
+    if (! $user) {
+        return collect();
+    }
+
+    // Consulta por relación personalizada o por email en la tabla de Jetstream
+    $invitations = method_exists($user, 'pendingTeamInvitations') && $user->pendingTeamInvitations()
+        ? $user->pendingTeamInvitations
+        : TeamInvitation::where('email', $user->email)->with('team.owner')->get();
+
+    return $invitations->map(function ($invitation) {
+        return [
+            'id' => $invitation->id,
+            'code' => $invitation->code ?? $invitation->id,
+            'team_name' => $invitation->team->name ?? __('Equipo sin nombre'),
+            'inviter_name' => $invitation->team->owner->name ?? __('Desconocido'),
+        ];
+    });
+});
+
+$acceptInvitation = function ($code) {
+    $user = Auth::user();
+
+    $invitation = TeamInvitation::where('id', $code)
+        ->orWhere('code', $code)
+        ->firstOrFail();
+
+    app(AddsTeamMembers::class)->add(
+        $invitation->team->owner,
+        $invitation->team,
+        $user->email,
+        $invitation->role
+    );
+
+    $invitation->delete();
+
+    $this->dispatch('invitation-accepted');
+
+    if ($this->pendingInvitations->isEmpty()) {
+        $this->showPendingInvitationsModal = false;
+    }
+
+    return redirect()->route('dashboard');
+};
+
+$declineInvitation = function ($code) {
+    $user = Auth::user();
+
+    $invitation = TeamInvitation::where('id', $code)
+        ->orWhere('code', $code)
+        ->firstOrFail();
+
+    $invitation->delete();
+
+    $this->dispatch('invitation-declined');
+
+    if ($this->pendingInvitations->isEmpty()) {
+        $this->showPendingInvitationsModal = false;
+    }
+};
+
+?>
+
 <div>
     @if ($this->pendingInvitations->isNotEmpty())
         <flux:modal name="pending-invitations" wire:model="showPendingInvitationsModal" focusable class="max-w-lg">
