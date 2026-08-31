@@ -6,25 +6,23 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NoticiasController;
 use App\Http\Controllers\ProblemasController;
 use App\Http\Middleware\EnsureTeamMembership;
+use App\Http\Middleware\SetTeamUrlDefaults;
 use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| Rutas publicas
+| Rutas públicas
 |--------------------------------------------------------------------------
-| 'home' es la landing publica (nexus_community). Es el nombre que usan
-| layouts/auth/*.blade.php, pages/auth/login y pages/auth/register, asi que
-| NO puede volver a declararse dentro del grupo de equipos.
+| 'home' es la landing pública (nexus_community).
 */
 
 Route::view('/', 'nexus_community')->name('home');
 
 /*
 |--------------------------------------------------------------------------
-| Rutas de configuracion
+| Rutas de configuración
 |--------------------------------------------------------------------------
-| Se registran ANTES del grupo con prefijo {current_team}. Si van despues,
-| el patron '/{current_team}' captura '/settings' y devuelve 403.
+| Se registran ANTES del grupo con prefijo {current_team}.
 */
 
 require __DIR__.'/settings.php';
@@ -36,7 +34,12 @@ require __DIR__.'/settings.php';
 */
 
 Route::prefix('{current_team}')
-    ->middleware(['auth', 'verified', EnsureTeamMembership::class])
+    ->middleware([
+        'auth',
+        'verified',
+        SetTeamUrlDefaults::class,
+        EnsureTeamMembership::class,
+    ])
     ->group(function (): void {
         Route::get('dashboard', [HomeController::class, 'index'])->name('dashboard');
 
