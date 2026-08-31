@@ -1,7 +1,8 @@
 @import 'tailwindcss';
 @import '../../vendor/livewire/flux/dist/flux.css';
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap');
 
-/* Estilos de la pagina de reportes (pages/auth/problemas.blade.php) */
+/* Estilos de la página de reportes */
 @import './problemas.css';
 
 @source '../views';
@@ -11,60 +12,254 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-@utility line-clamp-2 {
-    line-clamp: 2;
-}
-
-@utility line-clamp-3 {
-    line-clamp: 3;
+/* --- VARIABLES GLOBALES & PALETA DE COLOR --- */
+:root {
+  --bg-dark: #1f1f37;
+  --card-bg: #464681;
+  --accent-purple: #8b2fc9;
+  --accent-purple-glow: rgba(139, 47, 201, 0.4);
+  --accent-cyan: #00f0ff;
+  --accent-cyan-glow: rgba(0, 240, 255, 0.3);
+  --text-main: #f0f3f8;
+  --text-muted: #7e8b9b;
+  --border-color: #1a1d28;
 }
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-    --color-zinc-50: #fafafa;
-    --color-zinc-100: #f5f5f5;
-    --color-zinc-200: #e5e5e5;
-    --color-zinc-300: #d4d4d4;
-    --color-zinc-400: #a3a3a3;
-    --color-zinc-500: #737373;
-    --color-zinc-600: #525252;
-    --color-zinc-700: #404040;
-    --color-zinc-800: #262626;
-    --color-zinc-900: #171717;
-    --color-zinc-950: #0a0a0a;
-    --color-accent: var(--color-neutral-800);
-    --color-accent-content: var(--color-neutral-800);
-    --color-accent-foreground: var(--color-white);
+  --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-orbitron: 'Orbitron', sans-serif;
+  --font-rajdhani: 'Rajdhani', sans-serif;
+  
+  --color-zinc-50: #fafafa;
+  --color-zinc-100: #f5f5f5;
+  --color-zinc-200: #e5e5e5;
+  --color-zinc-300: #d4d4d4;
+  --color-zinc-400: #a3a3a3;
+  --color-zinc-500: #737373;
+  --color-zinc-600: #525252;
+  --color-zinc-700: #404040;
+  --color-zinc-800: #262626;
+  --color-zinc-900: #171717;
+  --color-zinc-950: #0a0a0a;
+  
+  /* Mapeo de la paleta Cyberpunk a clases de Tailwind (bg-accent, text-accent) */
+  --color-accent: var(--accent-purple);
+  --color-accent-content: var(--accent-purple);
+  --color-accent-foreground: var(--color-white);
 }
 
 @layer theme {
-    .dark {
-        --color-accent: var(--color-white);
-        --color-accent-content: var(--color-white);
-        --color-accent-foreground: var(--color-neutral-800);
-    }
+  .dark {
+    --color-accent: var(--accent-cyan);
+    --color-accent-content: var(--accent-cyan);
+    --color-accent-foreground: var(--color-zinc-900);
+  }
 }
 
+/* --- REGLAS BASE ADAPTADAS A TAILWIND --- */
 @layer base {
-    *,
-    ::after,
-    ::before,
-    ::backdrop,
-    ::file-selector-button {
-        border-color: var(--color-gray-200, currentColor);
-    }
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--border-color, currentColor);
+  }
+
+  body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    font-family: var(--font-rajdhani);
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-image: 
+      radial-gradient(circle at 10% 20%, rgba(139, 47, 201, 0.08) 0%, transparent 40%),
+      radial-gradient(circle at 90% 80%, rgba(0, 240, 255, 0.05) 0%, transparent 40%);
+  }
 }
 
+/* --- ADAPTACIONES COMPONENTES FLUX --- */
 [data-flux-field]:not(ui-radio, ui-checkbox) {
-    @apply grid gap-2;
+  @apply grid gap-2;
 }
 
 [data-flux-label] {
-    @apply !mb-0 !leading-tight;
+  @apply !mb-0 !leading-tight;
 }
 
 input:focus[data-flux-control],
 textarea:focus[data-flux-control],
 select:focus[data-flux-control] {
-    @apply outline-hidden ring-2 ring-accent ring-offset-2 ring-offset-accent-foreground;
+  @apply outline-hidden ring-2 ring-accent ring-offset-2 ring-offset-accent-foreground;
+}
+
+/* --- ESTILOS COMPONENTES CYBERPUNK Y SLIDER --- */
+@layer components {
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 50px;
+    border-bottom: 1px solid var(--border-color);
+    background: rgba(7, 7, 10, 0.85);
+    backdrop-filter: blur(10px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .brand-logo {
+    background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: 1.2rem;
+    color: #000;
+    box-shadow: 0 0 12px var(--accent-purple-glow);
+  }
+
+  .brand-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--accent-cyan);
+    letter-spacing: 1px;
+    text-shadow: 0 0 8px var(--accent-cyan-glow);
+  }
+
+  .btn-signin {
+    border: 1px solid var(--accent-cyan);
+    color: var(--accent-cyan);
+    background: transparent;
+    padding: 8px 18px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-signin:hover {
+    background: var(--accent-cyan);
+    color: #000;
+    box-shadow: 0 0 15px var(--accent-cyan-glow);
+  }
+
+  .hero-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+    max-width: 1400px;
+    margin: 40px auto;
+    padding: 0 40px;
+    align-items: start;
+  }
+
+  .hero-left {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+  }
+
+  .badge-tag {
+    display: inline-block;
+    border: 1px solid var(--accent-cyan);
+    color: var(--accent-cyan);
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    font-family: monospace;
+    letter-spacing: 1.5px;
+    border-radius: 3px;
+    width: fit-content;
+    background: rgba(0, 240, 255, 0.05);
+  }
+
+  .hero-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 3.5rem;
+    font-weight: 900;
+    line-height: 1.05;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .btn-primary, .btn-primary:visited {
+    background: var(--accent-purple);
+    color: #fff;
+    border: none;
+    padding: 14px 28px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 0 20px var(--accent-purple-glow);
+    transition: all 0.3s ease;
+    text-decoration: none;
+  }
+
+  .btn-primary:hover {
+    background: #9d3be0;
+    transform: translateY(-2px);
+    box-shadow: 0 0 28px rgba(139, 47, 201, 0.7);
+  }
+
+  .stats-card, .extra-section, .game-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+  }
+
+  .games-slider {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-height: 85vh;
+    overflow-y: auto;
+    scrollbar-width: none;
+    scroll-behavior: smooth;
+  }
+
+  .games-slider::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility line-clamp-2 {
+  line-clamp: 2;
+}
+
+@utility line-clamp-3 {
+  line-clamp: 3;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+}
+
+@media (max-width: 1024px) {
+  .hero-container {
+    grid-template-columns: 1fr;
+  }
 }
