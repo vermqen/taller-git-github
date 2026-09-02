@@ -25,18 +25,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        foreach (['publicaciones', 'comunidades', 'noticias', 'comentarios', 'problemas'] as $tableName) {
-            Schema::table($tableName, function (Blueprint $table) use ($tableName): void {
-                if (Schema::hasColumn($tableName, 'team_id')) {
-                    $table->dropConstrainedForeignId('team_id');
-                }
-            });
-        }
-
-        Schema::table('noticias', function (Blueprint $table): void {
-            if (Schema::hasColumn('noticias', 'user_id')) {
-                $table->dropConstrainedForeignId('user_id');
-            }
-        });
+        // This migration conditionally adds columns that may predate it.
+        // Keeping the rollback empty prevents deleting columns owned by another migration.
     }
 };

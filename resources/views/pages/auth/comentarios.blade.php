@@ -13,7 +13,6 @@
                     Comparte ideas, descubre estrategias y conversa con jugadores de tu equipo.
                 </p>
             </div>
-          <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
             <a href="{{ route('comentarios.create', $team->slug) }}" wire:navigate
                class="rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-zinc-950 transition hover:bg-amber-400">
                 Escribir comentario 
@@ -85,8 +84,10 @@
                         <div class="flex shrink-0 gap-3 text-xs">
                             <a href="{{ route('comentarios.show', [$team->slug, $comentario]) }}" wire:navigate
                                class="font-semibold text-amber-600 hover:underline">Ver</a>
-                            <a href="{{ route('comentarios.edit', [$team->slug, $comentario]) }}" wire:navigate
-                               class="font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-white">Editar</a>
+                                     @can('update', [$comentario, $team])
+                                          <a href="{{ route('comentarios.edit', [$team->slug, $comentario]) }}" wire:navigate
+                                              class="font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-white">Editar</a>
+                                     @endcan
                         </div>
                     </div>
 

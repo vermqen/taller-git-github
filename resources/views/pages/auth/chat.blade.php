@@ -78,7 +78,11 @@
             if (input.value.trim() !== '') {
                 const bubble = document.createElement('div');
                 bubble.className = 'message-bubble message-outgoing';
-                bubble.innerHTML = input.value + '<span class="message-time">Ahora</span>';
+                bubble.textContent = input.value;
+                const time = document.createElement('span');
+                time.className = 'message-time';
+                time.textContent = 'Ahora';
+                bubble.appendChild(time);
                 
                 box.appendChild(bubble);
                 input.value = '';

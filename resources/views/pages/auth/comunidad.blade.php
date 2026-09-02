@@ -82,10 +82,12 @@
                             {{ $comunidad->miembros_count }}
                             {{ $comunidad->miembros_count === 1 ? 'miembro' : 'miembros' }}
                         </span>
-                        <a href="{{ route('comunidad.edit', [$team->slug, $comunidad]) }}" wire:navigate
-                           class="text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-white">
-                            Editar
-                        </a>
+                        @can('update', [$comunidad, $team])
+                            <a href="{{ route('comunidad.edit', [$team->slug, $comunidad]) }}" wire:navigate
+                               class="text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-white">
+                                Editar
+                            </a>
+                        @endcan
                     </div>
                 </article>
             @empty

@@ -8,7 +8,7 @@
     <!-- TARJETAS DE REDES SOCIALES -->
     <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <!-- Discord -->
-        <a href="https://discord.gg" target="_blank"
+        <a href="https://discord.gg" target="_blank" rel="noopener noreferrer"
            class="group flex flex-col justify-between rounded-xl border border-zinc-200 bg-white p-6 transition hover:border-amber-400 dark:border-zinc-700 dark:bg-zinc-900">
             <div>
                 <div class="text-3xl">🎮</div>
@@ -23,7 +23,7 @@
         </a>
 
         <!-- Twitch -->
-        <a href="https://twitch.tv" target="_blank"
+        <a href="https://twitch.tv" target="_blank" rel="noopener noreferrer"
            class="group flex flex-col justify-between rounded-xl border border-zinc-200 bg-white p-6 transition hover:border-amber-400 dark:border-zinc-700 dark:bg-zinc-900">
             <div>
                 <div class="text-3xl">🟣</div>
@@ -38,7 +38,7 @@
         </a>
 
         <!-- Twitter / X -->
-        <a href="https://twitter.com" target="_blank"
+        <a href="https://twitter.com" target="_blank" rel="noopener noreferrer"
            class="group flex flex-col justify-between rounded-xl border border-zinc-200 bg-white p-6 transition hover:border-amber-400 dark:border-zinc-700 dark:bg-zinc-900">
             <div>
                 <div class="text-3xl">🐦</div>
@@ -53,7 +53,7 @@
         </a>
 
         <!-- TikTok & Instagram -->
-        <a href="https://instagram.com" target="_blank"
+        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer"
            class="group flex flex-col justify-between rounded-xl border border-zinc-200 bg-white p-6 transition hover:border-amber-400 dark:border-zinc-700 dark:bg-zinc-900">
             <div>
                 <div class="text-3xl">📱</div>

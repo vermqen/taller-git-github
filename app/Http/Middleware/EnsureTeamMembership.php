@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Team;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,7 +24,7 @@ class EnsureTeamMembership
             return $next($request);
         }
 
-        $slug = is_object($teamParam) ? ($teamParam->slug ?? $teamParam->id) : $teamParam;
+        $slug = $teamParam instanceof Team ? $teamParam->getRouteKey() : (string) $teamParam;
 
         // Verificar pertenencia (soporta Jetstream allTeams() o relación teams())
         $teams = method_exists($user, 'allTeams') ? $user->allTeams() : $user->teams;

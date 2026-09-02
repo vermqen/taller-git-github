@@ -1,77 +1,110 @@
 <?php
 
-use function Livewire\Volt\{state, computed};
+use App\Models\TeamInvitation;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
-use Laravel\Jetstream\TeamInvitation;
-use Laravel\Jetstream\Contracts\AddsTeamMembers;
+use Livewire\Attributes\Computed;
+use Livewire\Component;
 
-state([
-    'showPendingInvitationsModal' => true,
-]);
+new class extends Component {
+    public bool $showPendingInvitationsModal = true;
 
-$pendingInvitations = computed(function () {
-    $user = Auth::user();
-
-    if (! $user) {
-        return collect();
+    public function mount(): void
+    {
+        if (session('team-invitation-accepted')) {
+            $this->dispatch('toast-show');
+        }
     }
 
-    // Consulta por relación personalizada o por email en la tabla de Jetstream
-    $invitations = method_exists($user, 'pendingTeamInvitations') && $user->pendingTeamInvitations()
-        ? $user->pendingTeamInvitations
-        : TeamInvitation::where('email', $user->email)->with('team.owner')->get();
+    #[Computed]
+    public function pendingInvitations(): Collection
+    {
+        $user = Auth::user();
 
-    return $invitations->map(function ($invitation) {
-        return [
-            'id' => $invitation->id,
-            'code' => $invitation->code ?? $invitation->id,
-            'team_name' => $invitation->team->name ?? __('Equipo sin nombre'),
-            'inviter_name' => $invitation->team->owner->name ?? __('Desconocido'),
-        ];
-    });
-});
+        if (! $user) {
+            return collect();
+        }
 
-$acceptInvitation = function ($code) {
-    $user = Auth::user();
+        return TeamInvitation::query()
+            ->where('email', $user->email)
+            ->whereNull('accepted_at')
+            ->where(function ($query): void {
+                $query->whereNull('expires_at')
+                    ->orWhere('expires_at', '>', Carbon::now());
+            })
+            ->with('team')
+            ->get()
+            ->map(function (TeamInvitation $invitation): array {
+                $owner = $invitation->team?->owner();
 
-    $invitation = TeamInvitation::where('id', $code)
-        ->orWhere('code', $code)
-        ->firstOrFail();
-
-    app(AddsTeamMembers::class)->add(
-        $invitation->team->owner,
-        $invitation->team,
-        $user->email,
-        $invitation->role
-    );
-
-    $invitation->delete();
-
-    $this->dispatch('invitation-accepted');
-
-    if ($this->pendingInvitations->isEmpty()) {
-        $this->showPendingInvitationsModal = false;
+                return [
+                    'id' => $invitation->id,
+                    'code' => $invitation->code,
+                    'team_name' => $invitation->team->name ?? __('Equipo sin nombre'),
+                    'inviter_name' => $owner?->name ?? __('Desconocido'),
+                ];
+            });
     }
 
-    return redirect()->route('dashboard');
+    public function acceptInvitation(string $code): mixed
+    {
+        $user = Auth::user();
+        $invitation = TeamInvitation::query()->where('code', $code)->firstOrFail();
+
+        if ($invitation->isAccepted()) {
+            TeamInvitation::query()
+                ->where('code', $code)
+                ->whereNull('accepted_at')
+                ->firstOrFail();
+        }
+
+        if ($invitation->email !== $user->email || $invitation->isExpired()) {
+            $this->addError('invitation', __('This invitation is no longer available.'));
+
+            return null;
+        }
+
+        $invitation->team->members()->syncWithoutDetaching([
+            $user->id => ['role' => $invitation->role],
+        ]);
+
+        $user->switchTeam($invitation->team);
+
+        $invitation->forceFill(['accepted_at' => Carbon::now()])->save();
+
+        session()->flash('team-invitation-accepted', true);
+        $this->dispatch('invitation-accepted');
+
+        if ($this->pendingInvitations->isEmpty()) {
+            $this->showPendingInvitationsModal = false;
+        }
+
+        return redirect()->route('dashboard');
+    }
+
+    public function declineInvitation(string $code): void
+    {
+        $user = Auth::user();
+
+        TeamInvitation::query()
+            ->where('code', $code)
+            ->where('email', $user->email)
+            ->whereNull('accepted_at')
+            ->where(function ($query): void {
+                $query->whereNull('expires_at')
+                    ->orWhere('expires_at', '>', Carbon::now());
+            })
+            ->firstOrFail()
+            ->delete();
+
+        $this->dispatch('invitation-declined');
+
+        if ($this->pendingInvitations->isEmpty()) {
+            $this->showPendingInvitationsModal = false;
+        }
+    }
 };
-
-$declineInvitation = function ($code) {
-    $user = Auth::user();
-
-    $invitation = TeamInvitation::where('id', $code)
-        ->orWhere('code', $code)
-        ->firstOrFail();
-
-    $invitation->delete();
-
-    $this->dispatch('invitation-declined');
-
-    if ($this->pendingInvitations->isEmpty()) {
-        $this->showPendingInvitationsModal = false;
-    }
-};
-
 ?>
 
 <div>
@@ -94,21 +127,10 @@ $declineInvitation = function ($code) {
                             </div>
 
                             <div class="mt-4 flex justify-end gap-2">
-                                <flux:button
-                                    variant="filled"
-                                    wire:click="declineInvitation('{{ $invitation['code'] }}')"
-                                    wire:loading.attr="disabled"
-                                    data-test="pending-invitation-decline"
-                                >
+                                <flux:button variant="filled" wire:click="declineInvitation('{{ $invitation['code'] }}')" wire:loading.attr="disabled" data-test="pending-invitation-decline">
                                     {{ __('Decline') }}
                                 </flux:button>
-
-                                <flux:button
-                                    variant="primary"
-                                    wire:click="acceptInvitation('{{ $invitation['code'] }}')"
-                                    wire:loading.attr="disabled"
-                                    data-test="pending-invitation-accept"
-                                >
+                                <flux:button variant="primary" wire:click="acceptInvitation('{{ $invitation['code'] }}')" wire:loading.attr="disabled" data-test="pending-invitation-accept">
                                     {{ __('Accept') }}
                                 </flux:button>
                             </div>
