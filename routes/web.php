@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\ComentariosController;
 use App\Http\Controllers\ComunidadController;
 use App\Http\Controllers\HomeController;
@@ -17,6 +18,11 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::view('/', 'nexus_community')->name('home');
+
+Route::middleware(['auth', 'verified'])->group(function (): void {
+    Route::get('chat/{recipient}', [ChatController::class, 'show'])->name('chat.show');
+    Route::post('chat/{recipient}', [ChatController::class, 'store'])->name('chat.store');
+});
 
 /*
 |--------------------------------------------------------------------------

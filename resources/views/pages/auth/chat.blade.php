@@ -1,93 +1,39 @@
-<x-layouts::auth :title="__('Lobby Chat')">
-    {{-- Conectamos el archivo CSS que acabamos de crear --}}
-    @vite(['resources/css/chat.css'])
+<x-layouts::app :title="__('Chat with :user', ['user' => $recipient->name])">
+    <div class="mx-auto w-full max-w-4xl space-y-6 p-6 lg:p-10">
+        <header class="flex items-center justify-between gap-4">
+            <div>
+                <p class="text-sm font-semibold uppercase tracking-[0.18em] text-amber-600">{{ __('Private chat') }}</p>
+                <h1 class="mt-2 text-3xl font-bold text-zinc-900 dark:text-white">{{ $recipient->name }}</h1>
+            </div>
+            <a href="{{ url()->previous() }}" class="text-sm font-semibold text-amber-600 hover:underline">{{ __('Back') }}</a>
+        </header>
 
-    <div class="chat-wrapper">
-        <!-- Barra lateral de Amigos / Jugadores -->
-        <div class="chat-sidebar">
-            <div class="sidebar-header">// JUGADORES ONLINE</div>
-            <ul class="friends-list">
-                <li class="friend-item active">
-                    <div class="avatar">V</div>
-                    <div class="friend-info">
-                        <div class="name">ViperGamer</div>
-                        <div class="status">● En el lobby</div>
+        <section class="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-700 dark:bg-zinc-900" aria-label="{{ __('Conversation messages') }}">
+            <div class="flex min-h-96 flex-col gap-3 overflow-y-auto" id="messagesBox">
+                @forelse ($messages as $message)
+                    <div class="message-bubble {{ $message->id_emisor === auth()->id() ? 'message-outgoing self-end' : 'message-incoming self-start' }}">
+                        {{ $message->contenido }}
+                        <span class="message-time">{{ $message->fecha_envio?->format('H:i') }}</span>
                     </div>
-                </li>
-                <li class="friend-item">
-                    <div class="avatar" style="border-color: #ffaa00;">S</div>
-                    <div class="friend-info">
-                        <div class="name">ShadowNinja</div>
-                        <div class="status" style="color: #ffaa00;">● En partida</div>
-                    </div>
-                </li>
-                <li class="friend-item">
-                    <div class="avatar" style="border-color: #888;">K</div>
-                    <div class="friend-info">
-                        <div class="name">Kraken99</div>
-                        <div class="status" style="color: #888;">○ Desconectado</div>
-                    </div>
-                </li>
-            </ul>
-        </div>
-
-        <!-- Área Principal de Conversación -->
-        <div class="chat-main">
-            <div class="chat-header">
-                <span style="font-weight: bold; color: #00ffcc;">Chat con: ViperGamer</span>
+                @empty
+                    <p class="m-auto text-sm text-zinc-500">{{ __('No messages yet.') }}</p>
+                @endforelse
             </div>
 
-            <!-- Lista de Mensajes Simulados -->
-            <div class="messages-container" id="messagesBox">
-                <div class="message-bubble message-incoming">
-                    ¡Hey! ¿Listo para la partida de torneo hoy?
-                    <span class="message-time">12:30 PM</span>
-                </div>
-
-                <div class="message-bubble message-outgoing">
-                    ¡Claro que sí! Ya tengo el equipo listo en el Discord.
-                    <span class="message-time">12:32 PM</span>
-                </div>
-
-                <div class="message-bubble message-incoming">
-                    Perfecto, entra a la sala 4 cuando puedas.
-                    <span class="message-time">12:33 PM</span>
-                </div>
-            </div>
-
-            <!-- Formulario para escribir mensaje -->
-            <form class="chat-input-area" onsubmit="event.preventDefault(); enviarMensajeDemo();">
-                <input 
-                    type="text" 
-                    id="inputMensaje" 
-                    class="chat-input" 
-                    placeholder="Escribe un mensaje al jugador..." 
-                    autocomplete="off"
-                >
-                <button type="submit" class="btn-send">Enviar</button>
+            <form method="POST" action="{{ route('chat.store', $recipient) }}" class="mt-5 flex gap-3">
+                @csrf
+                <label for="contenido" class="sr-only">{{ __('Message') }}</label>
+                <input id="contenido" name="contenido" type="text" maxlength="5000" required autofocus
+                       value="{{ old('contenido') }}" placeholder="{{ __('Write a message...') }}"
+                       class="min-w-0 flex-1 rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
+                <button type="submit" class="rounded-lg bg-amber-500 px-4 py-2 font-semibold text-zinc-950 hover:bg-amber-400">
+                    {{ __('Send') }}
+                </button>
             </form>
-        </div>
-    </div>
 
-    <!-- Script interactivo de prueba -->
-    <script>
-        function enviarMensajeDemo() {
-            const input = document.getElementById('inputMensaje');
-            const box = document.getElementById('messagesBox');
-            
-            if (input.value.trim() !== '') {
-                const bubble = document.createElement('div');
-                bubble.className = 'message-bubble message-outgoing';
-                bubble.textContent = input.value;
-                const time = document.createElement('span');
-                time.className = 'message-time';
-                time.textContent = 'Ahora';
-                bubble.appendChild(time);
-                
-                box.appendChild(bubble);
-                input.value = '';
-                box.scrollTop = box.scrollHeight;
-            }
-        }
-    </script>
-</x-layouts::auth>
+            @error('contenido')
+                <p role="alert" class="mt-2 text-sm text-red-600">{{ $message }}</p>
+            @enderror
+        </section>
+    </div>
+</x-layouts::app>
