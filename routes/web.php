@@ -6,6 +6,7 @@ use App\Http\Controllers\ComunidadController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NoticiasController;
 use App\Http\Controllers\ProblemasController;
+use App\Http\Controllers\PublicNewsController;
 use App\Http\Middleware\EnsureTeamMembership;
 use App\Http\Middleware\SetTeamUrlDefaults;
 use Illuminate\Support\Facades\Route;
@@ -17,7 +18,11 @@ use Illuminate\Support\Facades\Route;
 | 'home' es la landing pública (nexus_community).
 */
 
-Route::view('/', 'nexus_community')->name('home');
+Route::get('/', [PublicNewsController::class, 'index'])->name('home');
+
+Route::post('noticias-oficiales/{noticia}/comentarios', [PublicNewsController::class, 'comment'])
+    ->middleware(['auth', 'verified'])
+    ->name('official-news.comments.store');
 
 Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::get('chat/{recipient}', [ChatController::class, 'show'])->name('chat.show');

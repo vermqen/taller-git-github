@@ -47,7 +47,12 @@ class SyncOfficialNews extends Command
                     $title = $this->value($item, 'title');
                     $content = $this->value($item, 'description') ?: $this->value($item, 'summary');
 
-                    if (! $url || ! $title || noticias::query()->where('fuente_url', $url)->exists()) {
+                    $sourceHash = $url ? hash('sha256', $url) : null;
+
+                    if (! $url || ! $title || noticias::query()
+                        ->where('fuente_hash', $sourceHash)
+                        ->orWhere('fuente_url', $url)
+                        ->exists()) {
                         continue;
                     }
 
@@ -59,6 +64,7 @@ class SyncOfficialNews extends Command
                         'categoria' => 'Noticias oficiales',
                         'fuente_nombre' => $feed['name'],
                         'fuente_url' => $url,
+                        'fuente_hash' => $sourceHash,
                         'es_oficial' => true,
                     ]);
 

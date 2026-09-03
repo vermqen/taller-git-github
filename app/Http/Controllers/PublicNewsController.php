@@ -1,0 +1,42 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\noticias;
+use App\Models\NoticiasComentario;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+
+class PublicNewsController extends Controller
+{
+    public function index(): View
+    {
+        return view('nexus_community', [
+            'officialNews' => noticias::query()
+                ->whereNull('team_id')
+                ->where('es_oficial', true)
+                ->with(['comentarios' => fn ($query) => $query->with('autor')->latest()])
+                ->latest()
+                ->limit(6)
+                ->get(),
+        ]);
+    }
+
+    public function comment(Request $request, noticias $noticia): RedirectResponse
+    {
+        abort_unless($noticia->team_id === null && $noticia->es_oficial, 404);
+
+        $validated = $request->validate([
+            'contenido' => ['required', 'string', 'max:2000'],
+        ]);
+
+        NoticiasComentario::create([
+            'noticia_id' => $noticia->id,
+            'user_id' => $request->user()->id,
+            'contenido' => $validated['contenido'],
+        ]);
+
+        return back()->with('status', 'Comentario publicado.');
+    }
+}

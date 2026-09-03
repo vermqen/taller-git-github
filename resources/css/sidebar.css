@@ -62,3 +62,43 @@
 .app-main {
     background: #1f1f37 !important;
 }
+
+.app-header {
+    --header-border: #1a1d28;
+    --header-panel: #17172a;
+    --header-cyan: #00f0ff;
+    position: relative;
+    background: linear-gradient(90deg, #090a12 0%, var(--header-panel) 48%, #252044 100%) !important;
+    border-color: var(--header-border) !important;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.28);
+}
+
+.app-header nav {
+    display: flex;
+    visibility: visible;
+    opacity: 1;
+}
+
+.app-header nav a {
+    color: #7e8b9b !important;
+}
+
+.app-header nav a:hover,
+.app-header nav a.bg-zinc-800\/80 {
+    color: var(--header-cyan) !important;
+}
+
+.app-header nav a.bg-zinc-800\/80 {
+    background: rgba(139, 47, 201, 0.28) !important;
+    box-shadow: 0 0 14px rgba(0, 240, 255, 0.12);
+}
+
+.app-header .border-l {
+    border-color: var(--header-border) !important;
+}
+
+@media (max-width: 767px) {
+    .app-header nav {
+        display: none;
+    }
+}

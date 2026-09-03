@@ -217,5 +217,51 @@
 
     </div>
 
+    <section class="official-news-section" aria-labelledby="official-news-title">
+        <div class="official-news-heading">
+            <span class="badge-tag">FUENTES VERIFICADAS // ACTUALIZACIONES</span>
+            <h2 id="official-news-title" class="official-news-title">Noticias oficiales de videojuegos</h2>
+            <p class="hero-description">Novedades publicadas por los blogs oficiales de las principales plataformas.</p>
+        </div>
+
+        <div class="official-news-grid">
+            @forelse ($officialNews as $noticia)
+                <article class="official-news-card" id="noticia-{{ $noticia->id }}">
+                    @if ($noticia->imagen_url)
+                        <img src="{{ filter_var($noticia->imagen_url, FILTER_VALIDATE_URL) ? $noticia->imagen_url : \Illuminate\Support\Facades\Storage::disk('public')->url($noticia->imagen_url) }}" alt="{{ $noticia->titulo }}" class="official-news-image" loading="lazy">
+                    @endif
+                    <div class="official-news-content">
+                        <p class="official-news-source">{{ $noticia->fuente_nombre }} · {{ $noticia->created_at?->diffForHumans() }}</p>
+                        <h3>{{ $noticia->titulo }}</h3>
+                        <p class="official-news-description">{{ $noticia->contenido }}</p>
+                        <a href="{{ $noticia->fuente_url }}" target="_blank" rel="noopener noreferrer" class="official-news-link">Leer fuente original &rarr;</a>
+
+                        <div class="official-comments">
+                            <h4>Comentarios ({{ $noticia->comentarios->count() }})</h4>
+                            @forelse ($noticia->comentarios->take(3) as $comentario)
+                                <p class="official-comment"><strong>{{ $comentario->autor?->name ?? 'Usuario' }}:</strong> {{ $comentario->contenido }}</p>
+                            @empty
+                                <p class="official-comment-empty">Sé el primero en comentar.</p>
+                            @endforelse
+
+                            @auth
+                                <form method="POST" action="{{ route('official-news.comments.store', $noticia) }}" class="official-comment-form">
+                                    @csrf
+                                    <label class="sr-only" for="comment-{{ $noticia->id }}">Escribe un comentario</label>
+                                    <input id="comment-{{ $noticia->id }}" name="contenido" maxlength="2000" required placeholder="Escribe un comentario...">
+                                    <button type="submit">Comentar</button>
+                                </form>
+                            @else
+                                <a href="{{ route('login') }}" class="official-news-link">Inicia sesión para comentar</a>
+                            @endauth
+                        </div>
+                    </div>
+                </article>
+            @empty
+                <p class="official-news-empty">Las noticias oficiales aparecerán aquí cuando se ejecute la sincronización.</p>
+            @endforelse
+        </div>
+    </section>
+
     <script src="{{ asset('js/home.js') }}" defer></script>
 </x-layouts::public>
