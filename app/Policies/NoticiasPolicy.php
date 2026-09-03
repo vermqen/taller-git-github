@@ -16,7 +16,7 @@ class NoticiasPolicy
 
     public function view(User $user, noticias $noticia, Team $team): bool
     {
-        return $this->belongsToTeam($user, $team) && $noticia->team_id === $team->id;
+        return $this->belongsToTeam($user, $team) && ($noticia->team_id === $team->id || $noticia->team_id === null);
     }
 
     public function create(User $user, Team $team): bool
@@ -26,12 +26,12 @@ class NoticiasPolicy
 
     public function update(User $user, noticias $noticia, Team $team): bool
     {
-        return $this->canManage($user, $team) || ($noticia->team_id === $team->id && $noticia->user_id === $user->id);
+        return $noticia->team_id === $team->id && ($this->canManage($user, $team) || $noticia->user_id === $user->id);
     }
 
     public function delete(User $user, noticias $noticia, Team $team): bool
     {
-        return $this->canManage($user, $team) || ($noticia->team_id === $team->id && $noticia->user_id === $user->id);
+        return $noticia->team_id === $team->id && ($this->canManage($user, $team) || $noticia->user_id === $user->id);
     }
 
     private function belongsToTeam(User $user, Team $team): bool

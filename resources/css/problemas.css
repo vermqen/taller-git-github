@@ -1,4 +1,12 @@
 .problems-page {
+    --problem-bg: #1f1f37;
+    --problem-card: #464681;
+    --problem-deep: #17172a;
+    --problem-purple: #8b2fc9;
+    --problem-cyan: #00f0ff;
+    --problem-text: #f0f3f8;
+    --problem-muted: #7e8b9b;
+    --problem-border: #1a1d28;
     width: min(1100px, 100%);
     margin: 0 auto;
     padding: 2.5rem 1.5rem 4rem;
@@ -10,7 +18,7 @@
 
 .problems-eyebrow {
     margin: 0;
-    color: #d97706;
+    color: var(--problem-cyan);
     font-size: .75rem;
     font-weight: 700;
     letter-spacing: .18em;
@@ -19,25 +27,26 @@
 
 .problems-title {
     margin: .75rem 0;
-    color: #18181b;
+    color: var(--problem-text);
     font-size: clamp(2rem, 5vw, 3.25rem);
     line-height: 1.05;
     font-weight: 800;
+    font-family: 'Orbitron', sans-serif;
 }
 
 .dark .problems-title {
-    color: #fafafa;
+    color: var(--problem-text);
 }
 
 .problems-intro {
     max-width: 42rem;
     margin: 0;
-    color: #71717a;
+    color: var(--problem-muted);
     line-height: 1.6;
 }
 
 .dark .problems-intro {
-    color: #a1a1aa;
+    color: var(--problem-muted);
 }
 
 .problems-layout {
@@ -48,48 +57,49 @@
 
 .problem-form,
 .problem-protocol {
-    border: 1px solid #e4e4e7;
+    border: 1px solid var(--problem-border);
     border-radius: .75rem;
     padding: 1.5rem;
 }
 
 .problem-form {
-    background: #fff;
+    background: var(--problem-card);
 }
 
 .problem-protocol {
-    background: #fafafa;
+    background: var(--problem-deep);
 }
 
 .dark .problem-form,
 .dark .problem-protocol {
-    border-color: #3f3f46;
-    background: #18181b;
+    border-color: var(--problem-border);
+    background: var(--problem-card);
 }
 
 .problem-form-title,
 .problem-protocol-title {
     margin: 0 0 1.25rem;
-    color: #18181b;
+    color: var(--problem-text);
     font-size: 1.25rem;
     font-weight: 700;
+    font-family: 'Orbitron', sans-serif;
 }
 
 .dark .problem-form-title,
 .dark .problem-protocol-title {
-    color: #fafafa;
+    color: var(--problem-text);
 }
 
 .problem-field {
     display: block;
     margin-top: 1.25rem;
-    color: #3f3f46;
+    color: var(--problem-text);
     font-size: .875rem;
     font-weight: 600;
 }
 
 .dark .problem-field {
-    color: #e4e4e7;
+    color: var(--problem-text);
 }
 
 .problem-input,
@@ -98,11 +108,11 @@
     display: block;
     width: 100%;
     margin-top: .5rem;
-    border: 1px solid #d4d4d8;
+    border: 1px solid var(--problem-border);
     border-radius: .5rem;
     padding: .7rem .8rem;
-    color: #18181b;
-    background: #fff;
+    color: var(--problem-text);
+    background: var(--problem-deep);
     font: inherit;
 }
 
@@ -114,16 +124,16 @@
 .dark .problem-input,
 .dark .problem-select,
 .dark .problem-textarea {
-    border-color: #52525b;
-    color: #fafafa;
-    background: #27272a;
+    border-color: var(--problem-border);
+    color: var(--problem-text);
+    background: var(--problem-deep);
 }
 
 .problem-input:focus,
 .problem-select:focus,
 .problem-textarea:focus {
-    border-color: #d97706;
-    outline: 2px solid rgb(217 119 6 / 20%);
+    border-color: var(--problem-cyan);
+    outline: 2px solid rgb(0 240 255 / 20%);
 }
 
 .problem-options {
@@ -134,7 +144,7 @@
 
 .problem-error {
     margin: 1rem 0 0;
-    color: #dc2626;
+    color: #ff6b7d;
     font-size: .875rem;
 }
 
@@ -143,14 +153,15 @@
     border: 0;
     border-radius: .5rem;
     padding: .7rem 1.25rem;
-    color: #18181b;
-    background: #f59e0b;
+    color: #090a12;
+    background: var(--problem-cyan);
     font-weight: 700;
     cursor: pointer;
 }
 
 .problem-submit:hover {
-    background: #fbbf24;
+    background: var(--problem-purple);
+    color: var(--problem-text);
 }
 
 .problem-steps {
@@ -159,19 +170,19 @@
     margin: 0;
     padding: 0;
     list-style: none;
-    color: #71717a;
+    color: var(--problem-muted);
     font-size: .875rem;
     line-height: 1.5;
 }
 
 .dark .problem-steps {
-    color: #a1a1aa;
+    color: var(--problem-muted);
 }
 
 .problem-steps b {
     display: inline-block;
     width: 2rem;
-    color: #d97706;
+    color: var(--problem-cyan);
 }
 
 @media (max-width: 700px) {

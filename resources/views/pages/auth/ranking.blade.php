@@ -1,4 +1,5 @@
 <x-layouts::app :title="__('Ranking Global // Nexus Gamer')">
+    @vite(['resources/css/dashboard.css', 'resources/css/chat.css'])
     <div class="mx-auto w-full max-w-7xl space-y-8 p-6 lg:p-10">
 
         <!-- ENCABEZADO PRINCIPAL -->

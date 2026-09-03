@@ -8,7 +8,11 @@ use App\Models\noticias;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class GamerAuthorizationTest extends TestCase
@@ -28,6 +32,45 @@ class GamerAuthorizationTest extends TestCase
         $response->assertOk()->assertJsonFragment(['titulo' => 'Visible'])->assertJsonMissing(['titulo' => 'Oculta']);
     }
 
+    public function test_official_news_is_visible_to_members_of_any_team(): void
+    {
+        [$user, $team] = $this->teamWithMember();
+        $otherTeam = Team::factory()->create();
+
+        noticias::create([
+            'titulo' => 'Actualización oficial',
+            'contenido' => 'Novedades publicadas por el estudio.',
+            'fuente_nombre' => 'PlayStation Blog',
+            'fuente_url' => 'https://blog.playstation.com/noticia',
+            'es_oficial' => true,
+        ]);
+
+        $response = $this->actingAs($user)->getJson(route('noticias.index', $team->slug));
+
+        $response->assertOk()->assertJsonFragment(['titulo' => 'Actualización oficial']);
+        $this->assertTrue($user->belongsToTeam($team));
+        $this->assertNotSame($team->id, $otherTeam->id);
+    }
+
+    public function test_official_news_sync_imports_and_deduplicates_feed_items(): void
+    {
+        Http::fake([
+            '*' => Http::response(<<<'XML'
+                <rss><channel><item><title>Parche oficial</title><link>https://example.com/parche</link><description>Detalles del parche.</description></item></channel></rss>
+                XML, 200),
+        ]);
+
+        Artisan::call('news:sync-official', ['--limit' => 1]);
+        Artisan::call('news:sync-official', ['--limit' => 1]);
+
+        $this->assertDatabaseCount('noticias', 1);
+        $this->assertDatabaseHas('noticias', [
+            'titulo' => 'Parche oficial',
+            'es_oficial' => true,
+            'team_id' => null,
+        ]);
+    }
+
     public function test_member_cannot_delete_another_members_news(): void
     {
         [$user, $team] = $this->teamWithMember();
@@ -40,6 +83,58 @@ class GamerAuthorizationTest extends TestCase
             ->assertForbidden();
 
         $this->assertDatabaseHas('noticias', ['id' => $noticia->id]);
+    }
+
+    public function test_news_can_be_created_with_an_uploaded_image(): void
+    {
+        [$user, $team] = $this->teamWithMember();
+        Storage::fake('public');
+
+        $response = $this->actingAs($user)->post(route('noticias.store', $team->slug), [
+            'titulo' => 'Noticia con imagen',
+            'contenido' => 'Contenido de prueba.',
+            'imagen' => UploadedFile::fake()->create('noticia.png', 100, 'image/png'),
+        ]);
+
+        $response->assertRedirect();
+        $noticia = noticias::query()->where('titulo', 'Noticia con imagen')->firstOrFail();
+
+        Storage::disk('public')->assertExists($noticia->imagen_url);
+        $this->assertStringStartsWith('noticias/', $noticia->imagen_url);
+    }
+
+    public function test_created_news_appears_in_the_html_listing(): void
+    {
+        [$user, $team] = $this->teamWithMember();
+
+        $this->actingAs($user)->post(route('noticias.store', $team->slug), [
+            'titulo' => 'Noticia visible en el listado',
+            'contenido' => 'Esta publicación debe permanecer disponible.',
+        ])->assertRedirect();
+
+        $this->actingAs($user)
+            ->get(route('noticias.index', $team->slug))
+            ->assertOk()
+            ->assertSee('Noticia visible en el listado')
+            ->assertSee('Esta publicación debe permanecer disponible.');
+    }
+
+    public function test_news_can_be_created_with_an_image_url(): void
+    {
+        [$user, $team] = $this->teamWithMember();
+        $imageUrl = 'https://example.com/images/noticia.png';
+
+        $response = $this->actingAs($user)->post(route('noticias.store', $team->slug), [
+            'titulo' => 'Noticia con enlace',
+            'contenido' => 'Contenido con imagen externa.',
+            'imagen_url' => $imageUrl,
+        ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('noticias', [
+            'titulo' => 'Noticia con enlace',
+            'imagen_url' => $imageUrl,
+        ]);
     }
 
     public function test_comments_always_use_the_authenticated_user(): void

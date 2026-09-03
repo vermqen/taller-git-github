@@ -12,7 +12,12 @@ class noticias extends Model
     /** @use HasFactory<NoticiasFactory> */
     use HasFactory;
 
-    protected $fillable = ['team_id', 'user_id', 'titulo', 'contenido', 'categoria', 'imagen_url'];
+    protected $fillable = ['team_id', 'user_id', 'titulo', 'contenido', 'categoria', 'imagen_url', 'fuente_nombre', 'fuente_url', 'es_oficial'];
+
+    protected function casts(): array
+    {
+        return ['es_oficial' => 'boolean'];
+    }
 
     /**
      * @return BelongsTo<Team, $this>

@@ -1,0 +1,64 @@
+.app-sidebar {
+    --sidebar-bg: #17172a;
+    --sidebar-panel: #27274b;
+    --sidebar-purple: #8b2fc9;
+    --sidebar-cyan: #00f0ff;
+    --sidebar-text: #f0f3f8;
+    --sidebar-muted: #7e8b9b;
+    --sidebar-border: #1a1d28;
+    background: linear-gradient(180deg, #17172a 0%, #1f1f37 100%) !important;
+    border-color: var(--sidebar-border) !important;
+    box-shadow: 8px 0 28px rgba(0, 0, 0, 0.2);
+    color: var(--sidebar-text);
+}
+
+.app-sidebar .sidebar-header {
+    border-bottom: 1px solid rgba(0, 240, 255, 0.12);
+    padding-bottom: 0.75rem;
+}
+
+.app-sidebar .sidebar-toggle {
+    color: var(--sidebar-purple) !important;
+}
+
+.app-sidebar .sidebar-toggle:hover {
+    background: rgba(0, 240, 255, 0.12) !important;
+    color: var(--sidebar-text) !important;
+}
+
+.app-sidebar .sidebar-label {
+    color: var(--sidebar-cyan) !important;
+}
+
+.app-sidebar .sidebar-separator,
+.app-sidebar .sidebar-user {
+    border-color: var(--sidebar-border) !important;
+}
+
+.app-sidebar [data-flux-sidebar-item] {
+    color: var(--sidebar-muted);
+    border: 1px solid transparent;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.app-sidebar [data-flux-sidebar-item]:hover,
+.app-sidebar [data-flux-sidebar-item][data-current] {
+    background: linear-gradient(90deg, rgba(139, 47, 201, 0.28), rgba(0, 240, 255, 0.08));
+    border-color: rgba(0, 240, 255, 0.35);
+    color: var(--sidebar-text);
+    box-shadow: 0 0 14px rgba(0, 240, 255, 0.12);
+}
+
+.app-sidebar [data-flux-sidebar-item][data-current] svg,
+.app-sidebar [data-flux-sidebar-item]:hover svg {
+    color: var(--sidebar-cyan);
+}
+
+.app-mobile-header {
+    background: var(--sidebar-panel) !important;
+    border-color: var(--sidebar-border) !important;
+}
+
+.app-main {
+    background: #1f1f37 !important;
+}

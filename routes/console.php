@@ -9,3 +9,8 @@ Schedule::call(function () {
         ->where('expires_at', '<', now())
         ->delete();
 })->daily()->description('Delete expired team invitations');
+
+Schedule::command('news:sync-official --limit=10')
+    ->everySixHours()
+    ->withoutOverlapping()
+    ->description('Sync official video game news');

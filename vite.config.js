@@ -10,7 +10,10 @@ export default defineConfig({
                 'resources/css/app.css',
                 'resources/js/app.js',
                 'resources/js/passkeys.js',
+                'resources/css/dashboard.css',
+                'resources/css/sidebar.css',
                 'resources/css/chat.css', // <-- Agregado
+                'resources/css/noticias.css',
             ],
             refresh: true,
             fonts: [

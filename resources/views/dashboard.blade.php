@@ -1,8 +1,8 @@
 <x-layouts::app :title="__('Dashboard')">
-    @vite(['resources/css/chat.css'])
+    @vite(['resources/css/dashboard.css', 'resources/css/chat.css'])
 
     <!-- CONTENEDOR FLUIDO (Sin mx-auto ni max-w-7xl) -->
-    <div class="w-full space-y-12 p-6 lg:p-10">
+    <div class="dashboard-shell w-full space-y-12 p-6 lg:p-10">
 
         <!-- BANNER PRINCIPAL -->
         <div class="rounded-2xl bg-zinc-950 p-8 text-white shadow-xl dark:bg-black">
@@ -16,13 +16,13 @@
         <!-- TARJETAS DE MÉTRICAS -->
         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             @foreach ([
-                ['label' => 'Noticias publicadas', 'value' => $noticias_totales,     'route' => 'noticias.index'],
-                ['label' => 'Comentarios',         'value' => $comentarios_totales,  'route' => 'comentarios.index'],
-                ['label' => 'Comunidades',         'value' => $comunidades_activas->count(), 'route' => 'comunidad.index'],
-                ['label' => 'Problemas abiertos',  'value' => $problemas_abiertos,   'route' => 'problemas.index'],
+                ['label' => 'Noticias publicadas', 'value' => $noticias_totales,     'route' => 'noticias.index', 'theme' => 'news'],
+                ['label' => 'Comentarios',         'value' => $comentarios_totales,  'route' => 'comentarios.index', 'theme' => 'comments'],
+                ['label' => 'Comunidades',         'value' => $comunidades_activas->count(), 'route' => 'comunidad.index', 'theme' => 'communities'],
+                ['label' => 'Problemas abiertos',  'value' => $problemas_abiertos,   'route' => 'problemas.index', 'theme' => 'issues'],
             ] as $card)
                 <a href="{{ route($card['route'], $team->slug) }}" wire:navigate
-                   class="rounded-xl border border-zinc-200 bg-white p-5 transition hover:border-amber-400 dark:border-zinc-700 dark:bg-zinc-900">
+                   class="metric-card metric-card--{{ $card['theme'] }} rounded-xl border border-zinc-200 bg-white p-5 transition hover:border-amber-400 dark:border-zinc-700 dark:bg-zinc-900">
                     <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ $card['label'] }}</p>
                     <p class="mt-2 text-3xl font-bold text-zinc-900 dark:text-white">{{ $card['value'] }}</p>
                 </a>
@@ -104,17 +104,17 @@
                         </div>
                     </li>
                     <li class="friend-item">
-                        <div class="avatar" style="border-color: #ffaa00;">S</div>
+                        <div class="avatar avatar-playing">S</div>
                         <div class="friend-info">
                             <div class="name">ShadowNinja</div>
-                            <div class="status" style="color: #ffaa00;">● En partida</div>
+                            <div class="status chat-status-playing">● En partida</div>
                         </div>
                     </li>
                     <li class="friend-item">
-                        <div class="avatar" style="border-color: #888;">K</div>
+                        <div class="avatar avatar-offline">K</div>
                         <div class="friend-info">
                             <div class="name">Kraken99</div>
-                            <div class="status" style="color: #888;">○ Desconectado</div>
+                            <div class="status chat-status-offline">○ Desconectado</div>
                         </div>
                     </li>
                 </ul>
@@ -123,7 +123,7 @@
             <!-- Área Principal de Conversación -->
             <div class="chat-main">
                 <div class="chat-header">
-                    <span style="font-weight: bold; color: #00ffcc;">Chat con: ViperGamer</span>
+                    <span class="chat-title" style="font-weight: bold;">Chat con: ViperGamer</span>
                 </div>
 
                 <div class="messages-container" id="messagesBox">

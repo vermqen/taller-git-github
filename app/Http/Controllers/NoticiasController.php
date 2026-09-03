@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\noticias;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Response;
 
 class NoticiasController extends Controller
@@ -15,10 +16,11 @@ class NoticiasController extends Controller
         Gate::authorize('viewAny', [noticias::class, $team]);
 
         $noticias = noticias::query()
-            ->where('team_id', $team->id)
+            ->where(fn ($query) => $query->where('team_id', $team->id)->orWhereNull('team_id'))
             ->with('autor')
             ->when($request->filled('buscar'), fn ($query) => $query->where('titulo', 'like', '%'.$request->string('buscar').'%'))
             ->when($request->filled('categoria'), fn ($query) => $query->where('categoria', $request->string('categoria')))
+            ->when($request->filled('oficial'), fn ($query) => $query->where('es_oficial', true))
             ->latest()
             ->paginate($request->integer('per_page', 12))
             ->appends($request->query());
@@ -57,7 +59,14 @@ class NoticiasController extends Controller
             'contenido' => ['required', 'string', 'max:10000'],
             'categoria' => ['nullable', 'string', 'max:80'],
             'imagen_url' => ['nullable', 'url', 'max:2048'],
+            'imagen' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp,gif', 'max:4096'],
         ]);
+
+        if ($request->hasFile('imagen')) {
+            $validated['imagen_url'] = $request->file('imagen')->store('noticias', 'public');
+        }
+
+        unset($validated['imagen']);
 
         $noticia = noticias::create([
             ...$validated,
@@ -110,7 +119,18 @@ class NoticiasController extends Controller
             'contenido' => ['sometimes', 'required', 'string', 'max:10000'],
             'categoria' => ['nullable', 'string', 'max:80'],
             'imagen_url' => ['nullable', 'url', 'max:2048'],
+            'imagen' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp,gif', 'max:4096'],
         ]);
+
+        if ($request->hasFile('imagen')) {
+            if ($noticia->imagen_url && ! filter_var($noticia->imagen_url, FILTER_VALIDATE_URL)) {
+                Storage::disk('public')->delete($noticia->imagen_url);
+            }
+
+            $validated['imagen_url'] = $request->file('imagen')->store('noticias', 'public');
+        }
+
+        unset($validated['imagen']);
 
         $noticia->update($validated);
 
