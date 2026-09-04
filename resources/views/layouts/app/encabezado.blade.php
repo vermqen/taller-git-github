@@ -16,7 +16,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
     <head>
         @include('partials.head')
-        @vite(['resources/css/sidebar.css'])
+        @vite(['resources/css/encabezado.css'])
     </head>
     <body class="min-h-screen bg-zinc-950 font-sans text-zinc-100 antialiased" x-data="{ mobileMenuOpen: false }">
 
@@ -32,7 +32,7 @@
                            wire:navigate
                            class="flex items-center transition-transform hover:scale-105"
                            title="Ir al inicio">
-                                                        <img src="{{ asset('nexus.png') }}" alt="Nexus Logo" class="h-20 max-h-30 w-auto rounded-lg object-contain">
+                            <img src="{{ asset('nexus.png') }}" alt="Nexus Logo" class="h-12 w-12 rounded-[45%] border-2 border-cyan-400/80 object-cover p-0.5 shadow-[0_0_12px_rgba(0,240,255,0.35)]">
                         </a>
                     </div>
 
